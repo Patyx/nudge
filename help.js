@@ -22,7 +22,7 @@ const BODY = {
     <ul>
       <li><b>Morning:</b> pick your Top 3 (the dashed box in the middle).</li>
       <li><b>During the day:</b> tick tasks off here or in Todoist. The headline turns into praise as you go, and nudges ease off after 3 done.</li>
-      <li><b>Tempted by reddit or Facebook?</b> You get a pause screen first. Take a timed break if you want one.</li>
+      <li><b>Tempted by a feed (reddit, Instagram, TikTok…)?</b> You get a pause screen first. Take a timed break if you want one.</li>
       <li><b>Evening:</b> the orange shutdown card sums up the day. Pick tomorrow's first step and close up.</li>
       <li><b>Sunday:</b> the weekly review empties the Inbox and checks every project.</li>
     </ul>
@@ -98,7 +98,7 @@ const BODY = {
     </ul>
     <h3>Pause screen and breaks</h3>
     <ul>
-      <li>Reddit's front page and subreddits, Facebook, and anything you add in Settings open a pause screen first. Single reddit posts (from a search, say) open normally.</li>
+      <li>Sites on your pause list (Settings, Pause list: reddit, Facebook, Instagram, TikTok, X and a few more by default, all editable) open a pause screen first. Single reddit posts (from a search, say) open normally.</li>
       <li>Start a 30m, 1h, 2h or 3h break to get through. After your daily break budget (3h by default) only 15-minute breaks are offered.</li>
     </ul>
     <h3>Notifications</h3>
@@ -118,8 +118,8 @@ const BODY = {
     <p>Check Settings, Notifications, and that Windows (Settings, System, Notifications) or macOS allows Chrome to show them. Focus or Do not disturb hides them too. The Test buttons in Settings send one right away.</p>
     <h3>A "Reload Nudge" bar appeared.</h3>
     <p>Nudge was updated but Chrome still runs the old background part. Click the button, or the reload arrow in <code>chrome://extensions</code>.</p>
-    <h3>Can I stop the reddit pause?</h3>
-    <p>Settings, Pause list: delete the line. Or take a break from the pause screen.</p>
+    <h3>Can I change which sites pause?</h3>
+    <p>Yes: Settings, Pause list. Add or delete lines (one site per line), or restore the defaults. Or just take a break from the pause screen.</p>
     <h3>Is my data private?</h3>
     <p>Your Todoist token stays in this browser. Nudge talks only to Todoist, Open-Meteo (weather, if you set a city), Google's icon service (shortcut icons) and, if you add a key, Anthropic's API. Nothing else.</p>
     <h3>Moving to a new PC?</h3>

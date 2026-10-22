@@ -1,4 +1,4 @@
-import { buildAreas, autoTrackedIds } from './engine.js';
+import { buildAreas, autoTrackedIds, DEFAULT_SETTINGS } from './engine.js';
 import { allSites } from './golden.js';
 import { loadPlace, savePlace, searchPlaces } from './weather.js';
 
@@ -207,4 +207,9 @@ $('#importFile').onchange = async (e) => {
   } catch (err) {
     status('#backupstatus', `Import failed: ${err.message}`, 'bad');
   }
+};
+
+$('#resetBlocked').onclick = () => {
+  $('#blockedSites').value = DEFAULT_SETTINGS.blockedSites.join('\n');
+  status('#savestatus', 'Default list restored. Click Save to keep it.', 'ok');
 };

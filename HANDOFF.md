@@ -29,7 +29,7 @@ ai.js              optional Claude wording (Anthropic Messages API, direct brows
 newtab.html/js     the main page; renders everything from one getData() call
 addtask.js, today.js, review.js, help.js, shortcuts.js, postit.js, weather.js,
 goldenui.js, corner.js, music.js, wellness.js, golden.js   UI pieces and content
-pause.html/js      the reddit/Facebook pause screen
+pause.html/js      the pause screen for sites on the pause list (settings.blockedSites, editable)
 options.html/js    settings, backup export/import, weather place search
 style.css          one stylesheet for all pages; light/dark tokens at the top, later blocks override earlier ones
 test/              node:test unit tests + background.harness.mjs (a fake chrome.* and fake Todoist)

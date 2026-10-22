@@ -7,7 +7,8 @@ export const HOUR = 3600000;
 
 export const DEFAULT_SETTINGS = {
   token: '',
-  blockedSites: ['reddit.com', 'facebook.com'],
+  // Feeds that open the pause screen first. Fully editable in Settings; YouTube is left off on purpose (people learn there).
+  blockedSites: ['reddit.com', 'facebook.com', 'instagram.com', 'tiktok.com', 'x.com', 'twitter.com', 'threads.net', 'pinterest.com', '9gag.com', 'twitch.tv'],
   projectStaleDays: 4,
   actionStaleDays: 7,
   nudgeEveryActiveMinutes: 150,

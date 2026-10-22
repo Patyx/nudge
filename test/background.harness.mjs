@@ -1,3 +1,4 @@
+import { DEFAULT_SETTINGS } from '../engine.js';
 // Runs background.js against a fake chrome.* and a fake Todoist/Claude API,
 // to exercise the real event flows end to end in Node.
 import assert from 'node:assert/strict';
@@ -371,7 +372,7 @@ console.log('ok  stale-background check');
 store.settings = { ...store.settings, blockedSites: ['reddit.com'] };
 delete store.migratedNoYoutube;
 await listeners.installed({ reason: 'update' });
-assert.deepEqual(store.settings.blockedSites, ['reddit.com', 'facebook.com']);
+assert.deepEqual(store.settings.blockedSites, DEFAULT_SETTINGS.blockedSites);
 store.settings.blockedSites = ['reddit.com', 'www.youtube.com', 'x.com'];
 delete store.migratedNoYoutube;
 await listeners.installed({ reason: 'update' });

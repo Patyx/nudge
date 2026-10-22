@@ -6,13 +6,13 @@ And when I drift off to procrastinate anyway, it suggests better things to do wi
 
 Nudge replaces Chrome's new tab page. It uses Todoist only as the place your tasks are stored; you only need to create a free Todoist account.
 
-Every new tab shows what you've done today, one next step with the reason for it, your deadlines and every project's next task. When a project goes quiet you get a gentle notification that says why. Reddit and Facebook open a pause screen first: your next step, a few hand-picked corners of the web, or a timed break.
+Every new tab shows what you've done today, one next step with the reason for it, your deadlines and every project's next task. When a project goes quiet you get a gentle notification that says why. Feeds like Reddit, Instagram, TikTok and Facebook open a pause screen first: your next step, a few hand-picked corners of the web, or a timed break.
 
 It's a free, open-source extension you load yourself (it isn't on the Chrome Web Store). There is no account, server or tracking. It talks only to Todoist, Open-Meteo for the weather if you set a place, and Claude if you add an API key.
 
 ![New tab, dark](docs/newtab-dark.png)
 
-**At a glance:** praise for what you finished · one next step with a reason · Top 3 for the day · deadlines · every project's next task and progress · focus timer · pause screen for reddit and Facebook with timed breaks · hand-picked sites instead of feeds · calm, switchable notifications · Help with an "explain this page" mode.
+**At a glance:** praise for what you finished · one next step with a reason · Top 3 for the day · deadlines · every project's next task and progress · focus timer · pause screen for social feeds with timed breaks · hand-picked sites instead of feeds · calm, switchable notifications · Help with an "explain this page" mode.
 
 ## Setup (about 5 minutes)
 
@@ -80,12 +80,11 @@ The **Help** button on the new tab (or the `?` key) has a getting-started guide,
 
 ![Pause screen](docs/pause.png)
 
-These pages open a pause screen first:
-- the Reddit front page and subreddits
-- Facebook
-- anything else you add in Settings
+Sites on your **pause list** open a pause screen first. The list is yours to edit in Settings (one site per line, subdomains included). It starts with:
 
-Single Reddit posts, say from a web search, open normally.
+reddit.com, facebook.com, instagram.com, tiktok.com, x.com, twitter.com, threads.net, pinterest.com, 9gag.com, twitch.tv
+
+YouTube isn't on it by default, since a lot of people learn there; add `youtube.com` if it's your weak spot. **Restore the default list** in Settings puts the defaults back. Single Reddit posts, say from a web search, open normally; only the front page and subreddits pause.
 
 The pause screen shows your next step, three hand-picked sites and a leisure suggestion from your Fun list. You can also start a **30m / 1h / 2h / 3h break**, which lets the sites through until a reminder says it's over. Breaks have a daily budget, 3 hours by default; after that only 15-minute breaks are offered.
 
