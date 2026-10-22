@@ -43,6 +43,7 @@ async function init() {
   $('#aiModel').value = settings.aiModel;
   for (const k of SHOW) $(`#${k}`).checked = settings[k] !== false;
   $('#goldenCount').value = settings.goldenCount ?? 4;
+  $('#showPolishSites').checked = settings.showPolishSites ?? navigator.language.toLowerCase().startsWith('pl');
   $('#dayStartHour').value = String(settings.dayStartHour ?? 4);
   renderAreas(data.snapshot);
   if (data.lastError) status('#teststatus', data.lastError.message, 'bad');
@@ -54,6 +55,7 @@ function collect() {
     notifyLevel: $('#notifyLevel').value,
     ...Object.fromEntries(CHECKS.map((k) => [k, $(`#${k}`).checked])),
     ...Object.fromEntries(SHOW.map((k) => [k, $(`#${k}`).checked])),
+    showPolishSites: $('#showPolishSites').checked,
     goldenCount: Math.max(2, Math.min(8, Number($('#goldenCount').value) || 4)),
     dayStartHour: Number($('#dayStartHour').value),
     blockedSites: $('#blockedSites').value.split(/\s*\n\s*/).map((s) => s.trim()).filter(Boolean),

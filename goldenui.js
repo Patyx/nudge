@@ -6,8 +6,10 @@ const UP = '<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><
 const DOWN = '<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" style="transform:rotate(180deg)"><path fill="currentColor" d="M6.3 1.6c.3-.6 1.1-.8 1.6-.4.6.4.9 1.1.8 1.8L8.4 5.5h4.3c1 0 1.7.9 1.5 1.8l-1 5.3c-.2.8-.9 1.4-1.7 1.4H5V6.6zM1.5 6.6H4V14H1.5a.5.5 0 0 1-.5-.5v-6.4c0-.3.2-.5.5-.5"/></svg>';
 
 async function getStore() {
-  const r = await chrome.storage.local.get(['goldenRecent', 'goldenRatings']);
-  return { recent: r.goldenRecent || [], ratings: r.goldenRatings || {} };
+  const r = await chrome.storage.local.get(['goldenRecent', 'goldenRatings', 'settings']);
+  // Polish sites: on for Polish browsers unless switched in Settings.
+  const pl = r.settings?.showPolishSites ?? (navigator.language || '').toLowerCase().startsWith('pl');
+  return { recent: r.goldenRecent || [], ratings: r.goldenRatings || {}, skipLangs: pl ? [] : ['pl'] };
 }
 
 // opts: { count, heading, ensure, cats }
@@ -26,8 +28,8 @@ export function mountGolden(section, opts = {}) {
   const status = section.querySelector('.golden-status');
 
   async function draw() {
-    const { recent, ratings } = await getStore();
-    const picks = pickGolden(count, { recent, ratings, ensure, cats });
+    const { recent, ratings, skipLangs } = await getStore();
+    const picks = pickGolden(count, { recent, ratings, ensure, cats, skipLangs });
     list.innerHTML = picks.map((p) => {
       const score = ratings[p.url] || 0;
       return `<li data-url="${esc(p.url)}">

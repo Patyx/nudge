@@ -16,6 +16,9 @@ export const GOLDEN = {
       { title: 'Explorable Explanations', url: 'https://explorabl.es/', about: 'A collection of essays you learn from by playing with them.' },
       { title: 'Nicky Case', url: 'https://ncase.me/', about: 'Playable explainers about trust, systems and how ideas spread.' },
       { title: 'Lobsters', url: 'https://lobste.rs/', about: 'A small, invite-only tech forum. Fewer posts, better ones, no infinite scroll.' },
+      { title: 'Instructables', url: 'https://www.instructables.com/', about: 'Step-by-step projects from people who built the thing first.' },
+      { title: 'Practical Engineering', url: 'https://practical.engineering/', about: 'How roads, dams and water systems actually work, explained clearly.' },
+      { title: 'Make:', url: 'https://makezine.com/', about: 'Projects and stories from the maker world: electronics, woodwork, 3D printing.' },
       { title: 'FORBOT', url: 'https://forbot.pl/', lang: 'pl', about: 'Polskie kursy elektroniki, Arduino i druku 3D, krok po kroku. Dobre paliwo dla domowych projektów.' },
     ],
   },
@@ -136,6 +139,50 @@ export const GOLDEN = {
       { title: 'NTS Radio', url: 'https://www.nts.live/', about: 'Independent radio with hosts who dig deep. Pick a show and let it run.' },
       { title: 'Radio Nowy Świat', url: 'https://nowyswiat.online/', lang: 'pl', about: 'Niezależne radio utrzymywane przez słuchaczy. Muzyka wybierana przez ludzi, nie algorytm.' },
       { title: 'Radio 357', url: 'https://radio357.pl/', lang: 'pl', about: 'Radio słuchaczy, z autorskimi audycjami muzycznymi.' },
+      { title: 'KEXP', url: 'https://www.kexp.org/', about: 'Listener-supported Seattle radio with DJs who pick everything themselves.' },
+    ],
+  },
+  art: {
+    label: 'Art & design',
+    sites: [
+      { title: 'Google Arts & Culture', url: 'https://artsandculture.google.com/', about: 'Museums from around the world, zoomable down to the brushstroke.' },
+      { title: 'The Met collection', url: 'https://www.metmuseum.org/art/collection', about: 'Half a million works from one of the great museums, free to browse.' },
+      { title: 'Rijksmuseum', url: 'https://www.rijksmuseum.nl/en', about: 'Dutch masters in very high resolution. Rembrandt up close.' },
+      { title: 'Smarthistory', url: 'https://smarthistory.org/', about: 'Short, friendly art history from cave paintings to now, by art historians.' },
+      { title: 'Colossal', url: 'https://www.thisiscolossal.com/', about: 'Daily art, craft and design from makers around the world.' },
+      { title: "It's Nice That", url: 'https://www.itsnicethat.com/', about: 'Illustration, graphic design and photography worth a slow look.' },
+    ],
+  },
+  food: {
+    label: 'Food & cooking',
+    sites: [
+      { title: 'Serious Eats', url: 'https://www.seriouseats.com/', about: 'Recipes that explain why they work. You cook better afterwards.' },
+      { title: 'Budget Bytes', url: 'https://www.budgetbytes.com/', about: 'Good, cheap recipes with the cost per serving worked out.' },
+      { title: 'The Woks of Life', url: 'https://thewoksoflife.com/', about: 'A family writing down the Chinese cooking they grew up with.' },
+      { title: 'Just One Cookbook', url: 'https://www.justonecookbook.com/', about: 'Japanese home cooking, step by step.' },
+      { title: 'Kwestia Smaku', url: 'https://www.kwestiasmaku.com/', lang: 'pl', about: 'Sprawdzone przepisy na co dzień, od obiadu po ciasto.' },
+    ],
+  },
+  nature: {
+    label: 'Nature & outdoors',
+    sites: [
+      { title: 'iNaturalist', url: 'https://www.inaturalist.org/', about: 'Photograph a plant or bug and people help you name it. Real science, too.' },
+      { title: 'eBird', url: 'https://ebird.org/', about: 'See which birds were spotted near you this week, and add your own.' },
+      { title: 'xeno-canto', url: 'https://xeno-canto.org/', about: 'Bird songs from all over the world, recorded by people who love them.' },
+      { title: 'Wildlife Photographer of the Year', url: 'https://www.nhm.ac.uk/wpy', about: 'Decades of the best nature photos, with the stories behind them.' },
+      { title: 'Global Forest Watch', url: 'https://www.globalforestwatch.org/', about: "A live map of the world's forests and where they are disappearing." },
+    ],
+  },
+  learn: {
+    label: 'Learn something',
+    sites: [
+      { title: 'Khan Academy', url: 'https://www.khanacademy.org/', about: 'Free lessons in maths, science and more, from the basics up.' },
+      { title: 'MIT OpenCourseWare', url: 'https://ocw.mit.edu/', about: 'Real MIT courses, lectures and problem sets, free.' },
+      { title: '3Blue1Brown', url: 'https://www.3blue1brown.com/', about: 'Maths explained with animation, so you see why it works.' },
+      { title: 'BetterExplained', url: 'https://betterexplained.com/', about: 'Intuitive explanations of the maths you were taught by rote.' },
+      { title: 'Seeing Theory', url: 'https://seeing-theory.brown.edu/', about: 'Probability and statistics you can play with in the browser.' },
+      { title: 'Crash Course', url: 'https://thecrashcourse.com/', about: 'Fast, fun courses on history, science, economics and more.' },
+      { title: 'Khan Academy po polsku', url: 'https://pl.khanacademy.org/', lang: 'pl', about: 'Darmowe lekcje matematyki i nauk ścisłych, po polsku.' },
     ],
   },
 };
@@ -178,15 +225,17 @@ function weightedIndex(weights, rand) {
 // sites you like come up more, recent ones are skipped while alternatives exist.
 // opts: { recent: [urls], ratings: {url: n}, rand, cats: [category keys], ensure: category key }
 export function pickGolden(count = 3, opts = {}) {
-  const { recent = [], ratings = {}, rand = Math.random, cats = Object.keys(GOLDEN), ensure = null } = opts;
+  const { recent = [], ratings = {}, rand = Math.random, cats = Object.keys(GOLDEN), ensure = null, skipLangs = [] } = opts;
   const recentSet = new Set(recent);
+  const skip = new Set(skipLangs); // e.g. ['pl'] hides Polish-language sites
+  const shown = (s) => !s.lang || !skip.has(s.lang);
   const candidates = (cat) => {
-    const sites = GOLDEN[cat].sites.filter((s) => weightOf(ratings[s.url]) > 0);
+    const sites = GOLDEN[cat].sites.filter((s) => shown(s) && weightOf(ratings[s.url]) > 0);
     const fresh = sites.filter((s) => !recentSet.has(s.url));
     return fresh.length ? fresh : sites;
   };
   const catWeight = (cat) => {
-    const live = GOLDEN[cat].sites.map((s) => weightOf(ratings[s.url])).filter((w) => w > 0);
+    const live = GOLDEN[cat].sites.filter(shown).map((s) => weightOf(ratings[s.url])).filter((w) => w > 0);
     if (!live.length) return 0;
     return live.reduce((a, b) => a + b, 0) / live.length; // average appeal, not list length
   };

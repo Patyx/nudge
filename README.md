@@ -1,6 +1,6 @@
 # Nudge
 
-I kept starting projects and then losing them: to the feed, to the backlog, to forgetting they existed. So I made the first thing my browser shows me a calm reminder of what I actually want to be doing, instead of what an algorithm wants me to watch.
+I kept starting projects and then losing them: to the feed, to the backlog, to forgetting they existed. So I made the first thing my browser shows me a calm reminder of what I actually want to be doing, instead of what an algorithm wants me to watch. And when I drift off to procrastinate anyway, it suggests better things to do with that time: hand-picked corners of the web worth visiting, instead of another feed.
 
 Nudge replaces Chrome's new tab page. It uses Todoist only as the place your tasks are stored; you don't need to live in the Todoist app.
 
@@ -89,17 +89,21 @@ The pause screen shows your next step, three hand-picked sites and a leisure sug
 
 ### Hand-picked sites
 
-There are about 90 sites outside the algorithm, in eight groups:
+About 120 sites outside the algorithm, in twelve groups:
 - engineering and making
 - space and science
+- learn something (free courses, maths you can see)
 - live views of the planet (Flightradar24, WindowSwap, ships, lightning)
+- nature and outdoors
+- art and design
+- food and cooking
 - fair news (wire services, fact-checkers, left/right pairs)
 - "unslop yourself" (small web, clear thinking)
 - books
 - curiosities
 - music found by humans
 
-16 of them are Polish, because that's where the author lives. Delete them or add your own in `golden.js`.
+18 are in Polish, because that's where the author lives. They only show when Chrome is set to Polish, or when you switch them on in Settings. Add your own in `golden.js`.
 
 Thumbs up makes a site up to 4× as likely to appear. Thumbs down makes it rare, and two thumbs down hide it; you can bring hidden sites back in Settings.
 
