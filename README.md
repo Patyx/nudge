@@ -4,9 +4,11 @@ A Chrome new tab page for people who use Todoist and drift away from their own p
 
 Every new tab shows what you've done today, one next step with the reason for it, your deadlines and every project's next task. When a project goes quiet you get a gentle notification that says why. Reddit and Facebook open a pause screen first: your next step, a few hand-picked corners of the web, or a timed break.
 
-It's a free, open-source extension you load yourself. There is no account, server or tracking. It talks only to Todoist, Open-Meteo for the weather if you set a place, and Claude if you add an API key.
+It's a free, open-source extension you load yourself (it isn't on the Chrome Web Store). There is no account, server or tracking. It talks only to Todoist, Open-Meteo for the weather if you set a place, and Claude if you add an API key.
 
 ![New tab, dark](docs/newtab-dark.png)
+
+**At a glance:** praise for what you finished · one next step with a reason · Top 3 for the day · deadlines · every project's next task and progress · focus timer · pause screen for reddit and Facebook with timed breaks · hand-picked sites instead of feeds · calm, switchable notifications · Help with an "explain this page" mode.
 
 ## Setup (about 5 minutes)
 
@@ -21,7 +23,9 @@ You need **Chrome** (or another Chromium browser) and a **Todoist** account. The
 7. Chrome adds a coloured footer to extension new tab pages. Right-click it and choose **Hide footer on New Tab page**.
 8. On Windows, check that notifications from Google Chrome are allowed (**Settings**, **System**, **Notifications**).
 
-**Updating:** download the new version, unzip it over the same folder, then click the reload arrow on Nudge's card in `chrome://extensions`. If you forget, the new tab shows a **Reload Nudge** button.
+**Updating:** download the new version, unzip it over the same folder, then click the reload arrow on Nudge's card in `chrome://extensions`. If you forget, the new tab shows a **Reload Nudge** button. Your settings, shortcuts and note stay.
+
+**Stuck?** Press `?` on the new tab for Help, or see the Questions tab there.
 
 ## How it reads your Todoist
 
@@ -109,10 +113,6 @@ Thumbs up makes a site up to 4× as likely to appear. Thumbs down makes it rare,
 
 Under Notifications in Settings, **Quiet / Normal / Chatty** sets how often nudges come, and each kind has its own switch.
 
-![Settings](docs/settings.png)
-
-![Help](docs/help.png)
-
 ### Optional: Claude wording
 
 Add an Anthropic API key in Settings and nudges are worded by Claude Haiku from your Todoist data. API use is billed separately from a Claude subscription and costs a small fraction of a cent per nudge. Without a key, the built-in lines in `voice.js` are used. They mix witty, coach-like and deadpan, and you can add your own.
@@ -130,6 +130,14 @@ In Settings:
 
 Up to 40 shortcut tiles fit on the left; the column scrolls if they don't all fit.
 
+![Settings](docs/settings.png)
+
+### Help
+
+The **Help** button (or `?`) has Getting started, The new tab, Todoist tips, Focus/breaks/notifications and Questions. **Explain this page** outlines whatever you hover over and says what it does.
+
+![Help](docs/help.png)
+
 ## Privacy
 
 - **Your Todoist token** is stored in this browser's local extension storage.
@@ -139,6 +147,12 @@ Up to 40 shortcut tiles fit on the left; the column scrolls if they don't all fi
   - Open-Meteo, only if you set a weather place
   - Google's favicon service, for shortcut icons
   - Anthropic's API, only if you add a key
+
+## Customising it, or checking the code
+
+Everything is plain JavaScript with no build step and no dependencies: edit a file, reload the extension, done. Text lives in `voice.js` (nudges), `wellness.js` (tips) and `golden.js` (sites), so those are the easiest places to start.
+
+If you'd like an AI coding agent (Claude Code or similar) to change it for you or review it, point it at [HANDOFF.md](HANDOFF.md) first. It explains how the parts fit together, the conventions, the known limitations and what to check before you trust a change.
 
 ## Files
 
@@ -160,6 +174,8 @@ Tests (Node 20+):
 node --test test/engine.test.mjs test/golden.test.mjs test/taskform.test.mjs test/tracking.test.mjs test/daily.test.mjs
 node test/background.harness.mjs
 ```
+
+Issues and pull requests are welcome. Ideas that make it calmer are more likely to be merged than ones that make it louder.
 
 ## Licence
 
