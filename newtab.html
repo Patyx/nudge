@@ -14,8 +14,10 @@
         <button class="wellness" id="wellness" title="Another tip"></button>
         <span class="right">
           <span id="breakbar"></span>
+          <button class="btn quiet" id="quiet-open" title="Stop all notifications until tomorrow morning">Quiet today</button>
+          <button class="btn quiet" id="search-open" title="Search your tasks (/)">Search</button>
           <button class="btn quiet" id="review-open">Weekly review</button>
-          <button class="btn quiet" id="tips-open">Todoist tips</button>
+          <button class="btn quiet" id="help-open" title="Help (?)">Help</button>
           <button class="btn quiet" id="settings">Settings</button>
         </span>
       </div>
@@ -62,98 +64,10 @@
   <dialog id="review" class="wide-dialog" aria-labelledby="review-title"></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-  <dialog id="tips" aria-labelledby="tips-title">
-    <div class="tips-head">
-      <h2 id="tips-title">Todoist tips</h2>
-      <button class="btn quiet" id="tips-close" aria-label="Close tips">Close</button>
-    </div>
-
-    <h3>How your Todoist is read</h3>
-    <ul>
-      <li><b>A section is a project here.</b> Keep your bigger projects (say Garden, Bike and Novel) as sections inside one project called <i>Big Projects</i>. The free plan allows 5 projects, so sections are how you get more.</li>
-      <li><b>The top task is the next step.</b> Drag the real next step to the top of each section. That is what nudges and the new tab show.</li>
-      <li><b>Quiet means nothing completed.</b> Adding or editing tasks does not count as progress, finishing one does.</li>
-      <li>Projects or sections named <i>Fun, Movies, Games, Books</i> or <i>Watch</i> never get nudges. They show up as evening suggestions instead.</li>
-    </ul>
-
-    <h3>Labels</h3>
-    <table>
-      <tr><td><code>@15m</code> <code>@30m</code> <code>@1h</code> <code>@2h</code> <code>@90m</code></td><td>Time estimate. Only labelled tasks appear under "I have 30m".</td></tr>
-      <tr><td><code>@low</code></td><td>Low-energy task, offered as a quick win.</td></tr>
-      <tr><td><code>@soft</code></td><td>The due date is a plan, not a deadline. No deadline reminders.</td></tr>
-    </table>
-
-    <h3>Deadlines</h3>
-    <ul>
-      <li>Any one-off <b>due date</b> counts as a deadline. Recurring tasks never do.</li>
-      <li>Add a time if it matters: <code>Friday 14:00</code>.</li>
-      <li>You get a reminder 7 days before, 3 days, 1 day, on the day, then daily while overdue (weekly after two weeks). Moving the date restarts the countdown.</li>
-      <li>Todoist Pro has a separate <b>deadline</b> field, typed in curly brackets: <code>{next friday}</code>. If set, it wins over the due date.</li>
-      <li>Deadline reminders ignore "Snooze 2h". They pause only during a break you started.</li>
-    </ul>
-
-    <h3>Adding tasks here</h3>
-    <ul>
-      <li><b>+ Add task</b> or the <b>N</b> key opens the form. Pick the project, time, due date and energy with buttons; it sets the right Todoist labels for you.</li>
-      <li><b>+ New project</b> creates a section (for example inside Big Projects). It gets its own row and staleness tracking straight away.</li>
-      <li><b>Make it the next step</b> puts the task at the top of its project. Otherwise it joins the end of the queue.</li>
-      <li><b>Steps</b>, one per line, become subtasks. <b>Notes</b> become the task description.</li>
-      <li>A project row that says <i>Write the next step</i> opens the form for that project.</li>
-    </ul>
-
-    <h3>Focus timer</h3>
-    <ul>
-      <li>The <b>▶</b> next to any task starts a focus timer. Nudges pause while it runs.</li>
-      <li><b>Done</b> completes the task and counts the time. Ticking the task off anywhere does the same.</li>
-      <li><b>Stop</b> asks what you got done and saves it as a completed subtask, so the time counts and the project shows progress. Or discard the time.</li>
-      <li>Only time that ends in something completed counts. The chart in the left column shows the last 7 days of focus and breaks.</li>
-    </ul>
-
-    <h3>Your day</h3>
-    <ul>
-      <li><b>Top 3</b>: pick up to three tasks each day. They sit above everything and the nudges focus on them. Stored only in Nudge, synced through Chrome. A day runs from 04:00 to 04:00.</li>
-      <li><b>Done today</b> lists what you finished. Projects with something done several days running show a streak.</li>
-      <li><b>Two-minute tasks</b>: label a task <code>@2m</code> (or pick 2m in the form). One pops up at most once an hour: just do it.</li>
-      <li><b>Shutdown</b> at 00:00: a notification and a card with today's summary. Pick tomorrow's Top 3, then <b>Close up</b>; nudges stay quiet until 08:00.</li>
-      <li><b>Breaks</b>: 3 hours a day. Once that's used, only 15-minute breaks are offered.</li>
-      <li><b>Weekly review</b> on Sunday at 21:00 (or any time from the top bar): the week's numbers, empty the Inbox, check each project's next step, clear stuck steps, pick Monday's Top 3.</li>
-    </ul>
-
-    <h3>Quick add, on phone or PC</h3>
-    <p>Type it in one line and Todoist sorts it. For names with spaces, pick the project from the list that pops up as you type.</p>
-    <p><code>Order bike chain #Big Projects /Bike @15m tomorrow</code></p>
-    <table>
-      <tr><td><code>#Project</code></td><td>which project</td></tr>
-      <tr><td><code>/Section</code></td><td>which section</td></tr>
-      <tr><td><code>@label</code></td><td>estimate or energy</td></tr>
-      <tr><td><code>tomorrow</code>, <code>fri 14:00</code></td><td>due date</td></tr>
-    </table>
-    <p>In a hurry, drop it in the Inbox and sort it at the weekly review.</p>
-
-    <h3>Habits that make this work</h3>
-    <ul>
-      <li><b>Weekly review.</b> Add a recurring task: <code>Weekly review every sunday @30m</code>. Empty the Inbox, pick next steps, delete what no longer matters.</li>
-      <li><b>Write steps, not topics.</b> "Rocket nozzle" is a topic. "Sketch nozzle profile on paper" is a step.</li>
-      <li><b>If a step sits for a week, it is too big or unclear.</b> Split it or rewrite it. The stuck-step nudge tells you which.</li>
-      <li>Deleting a task you will never do is progress too.</li>
-    </ul>
-
-    <h3>Notifications</h3>
-    <ul>
-      <li><b>Open in Todoist</b> jumps to the task. <b>Snooze 2h</b> pauses regular nudges.</li>
-      <li>At most one regular nudge per 2 hours of active PC use. Change it in Settings.</li>
-    </ul>
-
-    <h3>Reddit and Facebook</h3>
-    <ul>
-      <li>They open a pause screen with your next step and three hand-picked sites instead. The same picks sit at the bottom of every new tab.</li>
-      <li><b>Thumbs up</b> makes a site (and its kind) show up more, up to 4× as often. <b>Thumbs down</b> makes it rare; twice hides it. Restore hidden ones in Settings.</li>
-      <li>Start a break to get through. They open freely until the break ends.</li>
-      <li>The <b>Music</b> button in the corner opens Spotify on a fresh playlist search. <b>Surprise me</b> rolls a genre you probably don't listen to.</li>
-      <li>Add or remove sites in Settings, under Pause list.</li>
-      <li>On the new tab the picks sit in the right column.</li>
-    </ul>
-  </dialog>
+  <dialog id="help" aria-labelledby="help-title"></dialog>
+  <dialog id="quiet-dialog" aria-labelledby="quiet-title"></dialog>
+  <dialog id="search" class="wide-dialog" aria-label="Search your tasks"></dialog>
+  <div class="help-box" id="help-box" hidden></div>
   <script type="module" src="newtab.js"></script>
 </body>
 </html>

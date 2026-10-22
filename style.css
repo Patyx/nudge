@@ -156,7 +156,7 @@ a { color: inherit; }
 .deadlines li.urgent a { font-weight: 600; }
 
 /* ---- tips dialog ---- */
-dialog#tips {
+dialog#help {
   width: min(680px, calc(100vw - 32px));
   max-height: calc(100vh - 64px);
   border: 1px solid var(--rule);
@@ -166,18 +166,18 @@ dialog#tips {
   padding: 8px 28px 28px;
   line-height: 1.55;
 }
-dialog#tips::backdrop { background: color-mix(in srgb, var(--ink) 35%, transparent); }
+dialog#help::backdrop { background: color-mix(in srgb, var(--ink) 35%, transparent); }
 .tips-head { position: sticky; top: 0; background: var(--paper); display: flex; justify-content: space-between; align-items: center; padding: 16px 0 8px; }
-#tips h2 { font: 400 26px/1.2 var(--serif); margin: 0; }
-#tips h3 { font-size: 15px; margin: 26px 0 8px; }
-#tips ul { padding-left: 18px; margin: 0; }
-#tips li { margin: 6px 0; color: var(--ink-2); }
-#tips li b { color: var(--ink); }
-#tips p { color: var(--ink-2); margin: 8px 0; }
-#tips table { border-collapse: collapse; width: 100%; font-size: 14px; }
-#tips td { padding: 6px 12px 6px 0; border-bottom: 1px solid var(--rule); vertical-align: top; color: var(--ink-2); }
-#tips td:first-child { white-space: nowrap; }
-#tips code { background: var(--paper-2); border: 1px solid var(--rule); border-radius: 5px; padding: 1px 6px; font-size: 13px; color: var(--ink); }
+#help h2 { font: 400 26px/1.2 var(--serif); margin: 0; }
+#help h3 { font-size: 15px; margin: 26px 0 8px; }
+#help ul { padding-left: 18px; margin: 0; }
+#help li { margin: 6px 0; color: var(--ink-2); }
+#help li b { color: var(--ink); }
+#help p { color: var(--ink-2); margin: 8px 0; }
+#help table { border-collapse: collapse; width: 100%; font-size: 14px; }
+#help td { padding: 6px 12px 6px 0; border-bottom: 1px solid var(--rule); vertical-align: top; color: var(--ink-2); }
+#help td:first-child { white-space: nowrap; }
+#help code { background: var(--paper-2); border: 1px solid var(--rule); border-radius: 5px; padding: 1px 6px; font-size: 13px; color: var(--ink); }
 
 /* ---- time picker ---- */
 .time { margin-top: 40px; }
@@ -702,3 +702,47 @@ body.newtab .wellness { justify-self: center; }
 .area .meter { pointer-events: auto; }
 .area .meter i, .area.stale .meter i { background: color-mix(in srgb, var(--ink-3) 70%, transparent); }
 .area .meter.full i { background: var(--done); }
+
+/* ---- 1.0: on hold, quiet today, search, help, hideable parts ---- */
+.off { display: none !important; }
+.area .status { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.area .hold { display: none; background: none; border: 1px solid var(--rule); border-radius: 999px; padding: 1px 9px; font: inherit; font-size: 12px; color: var(--ink-2); cursor: pointer; }
+.area .status:hover .hold, .area .hold:focus-visible { display: inline-block; }
+.area .hold:hover { color: var(--ink); border-color: var(--ink-3); }
+.area.held .name, .area.held .step { opacity: .45; }
+.area.held .st { color: var(--ink-3); font-style: italic; }
+.area.held .meter { opacity: .4; }
+#quiet-open.on { color: var(--calm, var(--focus)); border-color: currentColor; }
+
+dialog#quiet-dialog { width: min(460px, calc(100vw - 32px)); border: 1px solid var(--rule); border-radius: 14px; background: var(--paper); color: var(--ink); padding: 0; }
+dialog#quiet-dialog::backdrop, dialog#search::backdrop { background: color-mix(in srgb, var(--ink) 35%, transparent); }
+.quiet-form { padding: 20px 24px; }
+.quiet-form h2 { font: 400 24px/1.2 var(--serif); margin: 0 0 8px; }
+.quiet-form p { color: var(--ink-2); margin: 0 0 10px; }
+.quiet-form .hint { color: var(--ink-3); font-size: 13px; }
+.quiet-form ul { margin: 0 0 12px; padding-left: 18px; color: var(--ink); }
+.quiet-form .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+
+dialog#search { width: min(640px, calc(100vw - 32px)); max-height: 70vh; margin-top: 12vh; border: 1px solid var(--rule); border-radius: 14px; background: var(--paper); color: var(--ink); padding: 0; }
+.search-box { display: flex; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--rule); }
+.search-box input { flex: 1; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 8px; padding: 9px 12px; color: var(--ink); font-size: 16px; }
+.search-results { list-style: none; margin: 0; padding: 6px 16px 14px; overflow-y: auto; max-height: calc(70vh - 70px); }
+.search-results li { display: flex; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--rule); }
+.search-results li a { flex: 1; min-width: 0; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-results li a:hover { text-decoration: underline; }
+.search-results .where, .search-results .est { color: var(--ink-3); font-size: 12px; white-space: nowrap; }
+.search-results .none { color: var(--ink-3); border: 0; }
+
+.help-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; position: sticky; top: 58px; background: var(--paper); padding-bottom: 8px; }
+.help-tabs [aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+#help ol { padding-left: 20px; margin: 0; }
+#help ol li { margin: 6px 0; color: var(--ink-2); }
+.help-box { position: fixed; z-index: 50; max-width: 320px; padding: 10px 12px; border-radius: 10px; background: var(--ink); color: var(--paper); font-size: 13px; line-height: 1.45; pointer-events: none; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
+.help-hit { outline: 2px dashed var(--focus) !important; outline-offset: 4px; border-radius: 6px; }
+body.explaining, body.explaining * { cursor: help !important; }
+.explain-bar { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 51; background: var(--focus); color: #fff; padding: 6px 14px; border-radius: 999px; font-size: 13px; }
+
+/* shortcuts: room for 30+ tiles */
+body.newtab .shortcuts .tiles { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 2px 4px; }
+body.newtab .tile > a, body.newtab .tile.add { padding: 8px 4px 6px; }
+body.newtab .tile .ico { width: 44px; height: 44px; }

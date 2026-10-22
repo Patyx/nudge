@@ -63,6 +63,27 @@
       <div class="inline"><input type="number" id="breakBudgetMin" min="15" max="600" step="15"><label for="breakBudgetMin">minutes of breaks per day; after that only 15-minute breaks</label></div>
       <div class="inline"><input type="time" id="shutdownTime"><label for="shutdownTime">shutdown reminder (the card shows from 30 minutes before)</label></div>
       <div class="inline"><input type="time" id="reviewTime"><label for="reviewTime">weekly review reminder, on Sundays</label></div>
+      <div class="inline"><label for="dayStartHour">A new day starts at</label>
+        <select id="dayStartHour"><option value="0">00:00</option><option value="1">01:00</option><option value="2">02:00</option><option value="3">03:00</option><option value="4">04:00</option><option value="5">05:00</option><option value="6">06:00</option><option value="7">07:00</option><option value="8">08:00</option></select>
+        <span class="hint">so late-night work still counts as the same day</span></div>
+    </section>
+
+    <section>
+      <h2>New tab</h2>
+      <p class="hint">Show or hide parts of the new tab. Changes show on the next new tab.</p>
+      <div class="grid show-grid">
+        <label class="inline"><input type="checkbox" id="showPraise"> Praise headline (today's tally first)</label>
+        <label class="inline"><input type="checkbox" id="showWeather"> Weather</label>
+        <label class="inline"><input type="checkbox" id="showTip"> Health tip</label>
+        <label class="inline"><input type="checkbox" id="showNote"> Sticky note</label>
+        <label class="inline"><input type="checkbox" id="showSites"> Hand-picked sites</label>
+        <label class="inline"><input type="checkbox" id="showMusic"> Music button</label>
+        <label class="inline"><input type="checkbox" id="showChart"> 7-day chart</label>
+        <label class="inline"><input type="checkbox" id="showDoneToday"> Done today</label>
+        <label class="inline"><input type="checkbox" id="showFits"> "I have 15m…"</label>
+        <label class="inline"><input type="checkbox" id="showShutdown"> Shutdown card in the evening</label>
+      </div>
+      <div class="inline"><input type="number" id="goldenCount" min="2" max="8"><label for="goldenCount">hand-picked sites on the new tab (2 to 8)</label></div>
     </section>
 
     <section>
@@ -86,6 +107,17 @@
       <input type="password" id="anthropicKey" autocomplete="off" spellcheck="false">
       <label for="aiModel">Model</label>
       <input type="text" id="aiModel" spellcheck="false">
+    </section>
+
+    <section>
+      <h2>Backup</h2>
+      <p class="hint">One file with your settings, shortcuts, note, weather place and site ratings. Use it for a new PC or to share a setup. Your Todoist token and API key are left out.</p>
+      <div class="inline">
+        <button class="btn" id="exportBtn">Export settings</button>
+        <label class="btn" for="importFile">Import settings…</label>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <span class="status" id="backupstatus"></span>
+      </div>
     </section>
 
     <section>

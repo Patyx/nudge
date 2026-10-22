@@ -10,7 +10,7 @@ export const DEFAULT_SETTINGS = {
   blockedSites: ['reddit.com', 'facebook.com'],
   projectStaleDays: 4,
   actionStaleDays: 7,
-  nudgeEveryActiveMinutes: 120,
+  nudgeEveryActiveMinutes: 150,
   newSessionGapHours: 6,
   trackedAreaIds: null, // null = automatic
   aiEnabled: false,
@@ -26,6 +26,13 @@ export const DEFAULT_SETTINGS = {
   notifyShutdown: true,
   notifyReview: true,
   farOffDays: 14, // tasks dated further out are notes: no nudges until they come closer
+  onHoldAreaIds: [], // projects paused on purpose: no quiet nudges, shown as "on hold"
+  dayStartHour: 4,
+  goldenCount: 4,
+  showPraise: true,
+  // parts of the new tab that can be hidden
+  showWeather: true, showTip: true, showNote: true, showSites: true, showMusic: true,
+  showChart: true, showDoneToday: true, showFits: true, showShutdown: true,
 };
 
 export const LEVEL_FACTOR = { quiet: 2, normal: 1, chatty: 0.5 };
@@ -150,6 +157,7 @@ export function computeState(data, settings, now = Date.now()) {
     return {
       ...a,
       tracked: trackedIds.has(a.id),
+      onHold: (s.onHoldAreaIds || []).includes(a.id),
       leisure: isLeisure(a),
       openCount: openIn.length,
       next,
@@ -158,7 +166,7 @@ export function computeState(data, settings, now = Date.now()) {
       daysQuiet,
       quietIsLowerBound: !lastDone,
       doneLast24h,
-      stale: trackedIds.has(a.id) && daysQuiet >= s.projectStaleDays,
+      stale: trackedIds.has(a.id) && !(s.onHoldAreaIds || []).includes(a.id) && daysQuiet >= s.projectStaleDays,
       nextAgeDays: next?.added_at ? (now - ts(next.added_at)) / DAY : 0,
     };
   });
@@ -363,7 +371,7 @@ export function nudgeCandidates(state) {
   }
 
   for (const a of areas) {
-    if (!a.tracked) continue;
+    if (!a.tracked || a.onHold) continue;
     const days = `${Math.floor(a.daysQuiet)}${a.quietIsLowerBound ? '+' : ''}`;
 
     if (a.openCount === 0 && a.daysQuiet >= s.projectStaleDays) {
@@ -389,7 +397,7 @@ export function nudgeCandidates(state) {
 
   const work = state.open.filter((t) => {
     const a = areaOfTask(state, t);
-    return !(a && a.leisure) && !OWN_TASK_RE.test(t.content) && !far(t);
+    return !(a && (a.leisure || a.onHold)) && !OWN_TASK_RE.test(t.content) && !far(t);
   });
 
   // Quick wins: short or low-energy tasks.

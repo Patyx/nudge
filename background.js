@@ -4,7 +4,7 @@ import {
   deadlineAlerts, deadlineNotification, breakEndText, LEVEL_FACTOR,
 } from './engine.js';
 import { fetchSnapshot, addTask, closeTask, deleteTask, taskUrl, syncCommands } from './todoist.js';
-import { topFor, dayId, breakUsedToday, breakOptions, inShutdownWindow, isReviewTime, weekId, doneToday } from './daily.js';
+import { setDayStart, topFor, dayId, breakUsedToday, breakOptions, inShutdownWindow, isReviewTime, weekId, doneToday } from './daily.js';
 import { say } from './voice.js';
 import { fmtDuration as fmtDur } from './tracking.js';
 import { buildCreateCommands, buildReorderCommand, siblingsOf } from './taskform.js';
@@ -27,7 +27,9 @@ async function load(key, fallback) {
 const save = (obj) => local.set(obj);
 
 async function getSettings() {
-  return { ...DEFAULT_SETTINGS, ...(await load('settings', {})) };
+  const s = { ...DEFAULT_SETTINGS, ...(await load('settings', {})) };
+  setDayStart(s.dayStartHour);
+  return s;
 }
 
 // ---------- data ----------
@@ -217,6 +219,9 @@ async function tick() {
   if (state !== 'active') return;
   await save({ lastActiveAt: Date.now() });
   if (await load('breakBlock', null)) return;
+  if ((await load('quietUntil', 0)) > Date.now()) return; // "Quiet until tomorrow": nothing at all
+  // Right after Chrome starts, give it 10 minutes before any reminder pops up.
+  if (Date.now() - (await load('startedAt', 0)) < 10 * 60000) return;
   await checkDeadlines();
   await checkShutdown();
   await checkReview();
@@ -299,7 +304,7 @@ chrome.alarms.onAlarm.addListener(async (a) => {
 
 chrome.runtime.onStartup.addListener(async () => {
   await ensureAlarms();
-  await save({ lastActiveAt: Date.now() });
+  await save({ lastActiveAt: Date.now(), startedAt: Date.now() });
   await sessionStart('startup');
 });
 
@@ -309,6 +314,11 @@ chrome.runtime.onInstalled.addListener(async (info) => {
     // Older versions only paused reddit: add the current defaults unless you changed the list yourself.
     // 0.4: YouTube comes off the default list.
     const saved = await load('settings', {});
+    // 1.0: nudges every 2.5h instead of 2h, unless you picked your own number.
+    if (saved.nudgeEveryActiveMinutes === 120 && !(await load('migrated150', false))) {
+      saved.nudgeEveryActiveMinutes = 150;
+      await save({ settings: saved, migrated150: true });
+    }
     if (Array.isArray(saved.blockedSites)) {
       let sites = saved.blockedSites.join() === 'reddit.com' ? [...DEFAULT_SETTINGS.blockedSites] : saved.blockedSites;
       if (!(await load('migratedNoYoutube', false))) {
@@ -461,7 +471,8 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
           load('focus', null), load('focusLog', []), load('breakLog', []),
         ]);
         const [shutdownDone, reviewedWeek, twoMinShownAt] = await Promise.all([load('shutdownDone', null), load('reviewedWeek', null), load('twoMinShownAt', 0)]);
-        return { snapshot, settings, breakBlock, currentNudge, lastBriefing, lastError, focus, focusLog, breakLog, shutdownDone, reviewedWeek, twoMinShownAt };
+        const quietUntil = await load('quietUntil', 0);
+        return { snapshot, settings, breakBlock, currentNudge, lastBriefing, lastError, focus, focusLog, breakLog, shutdownDone, reviewedWeek, twoMinShownAt, quietUntil: quietUntil > Date.now() ? quietUntil : 0 };
       }
       case 'startBreak': return { ok: true, minutes: await startBreak(msg.minutes) };
       case 'shutdownDone': {
@@ -497,6 +508,18 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
       case 'focusDone': return await focusDone();
       case 'focusStop': return await focusStop(msg);
       case 'createTask': return await createTask(msg.form);
+      case 'setOnHold': {
+        const s = await load('settings', {});
+        const ids = new Set(s.onHoldAreaIds || []);
+        if (msg.onHold) ids.add(msg.areaId); else ids.delete(msg.areaId);
+        await save({ settings: { ...s, onHoldAreaIds: [...ids] } });
+        return { ok: true };
+      }
+      case 'quietToday': {
+        const until = msg.off ? 0 : await nextMorning();
+        await save({ quietUntil: until });
+        return { ok: true, until };
+      }
       case 'saveSettings': {
         await save({ settings: { ...(await load('settings', {})), ...msg.settings } });
         if (msg.settings.token !== undefined) await refresh({ force: true });

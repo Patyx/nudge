@@ -4,7 +4,9 @@ import { taskInArea, minutesFromLabels, cleanTitle } from './engine.js';
 import { breakMinutes } from './tracking.js';
 
 const DAY = 86400000;
-export const DAY_STARTS_AT = 4; // a day runs 04:00 to 04:00, so midnight work still counts as "today"
+// A day runs 04:00 to 04:00 by default, so midnight work still counts as "today". Settings can move it.
+export let DAY_STARTS_AT = 4;
+export function setDayStart(h) { const n = Number(h); if (Number.isInteger(n) && n >= 0 && n <= 8) DAY_STARTS_AT = n; }
 
 // ---------- logical day ----------
 

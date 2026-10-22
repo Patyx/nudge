@@ -137,6 +137,11 @@ await listeners.startup(); // duplicate guard
 assert.equal(notifications.length, 1, 'no double briefing');
 console.log('ok  briefing:', notifications[0].title, '|', notifications[0].message);
 
+// nothing pops up in the first 10 minutes after Chrome starts
+await listeners.alarm({ name: 'tick' });
+assert.equal(notifications.length, 1, 'startup grace');
+store.startedAt = Date.now() - 11 * 60000;
+
 // first active tick: deadline 2 days out gets its "3 days" reminder, once
 store.activeMinutes = 0;
 store.snoozeUntil = Date.now() + 3600000; // deadlines ignore snooze
@@ -149,12 +154,12 @@ assert.equal(notifications.length, 2, 'deadline reminder not repeated');
 store.snoozeUntil = 0;
 notifications.splice(1, 1); // keep later indexes as before
 
-// ticks: no nudge until 120 active minutes
+// ticks: no nudge until 150 active minutes
 store.activeMinutes = 0;
-for (let i = 0; i < 23; i++) await listeners.alarm({ name: 'tick' });
+for (let i = 0; i < 29; i++) await listeners.alarm({ name: 'tick' });
 assert.equal(notifications.length, 1);
 await listeners.alarm({ name: 'tick' });
-assert.equal(notifications.length, 2, 'nudge after 120 active min');
+assert.equal(notifications.length, 2, 'nudge after 150 active min');
 assert.equal(store.activeMinutes, 0);
 console.log('ok  nudge:', notifications[1].title, '|', notifications[1].message);
 

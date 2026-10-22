@@ -36,7 +36,7 @@ You need **Chrome** (or another Chromium browser) and a **Todoist** account. The
 - **Leisure projects never get nudged.** These are projects or sections named Fun, Movies, Games, Books or Watch. They show up as evening suggestions instead.
 - **Far-off tasks are notes.** A task dated more than 14 days ahead is never nudged until it gets closer.
 
-The **Todoist tips** button on the new tab has a longer cheat sheet.
+The **Help** button on the new tab (or the `?` key) has a getting-started guide, Todoist tips and answers to common questions. Its **Explain this page** mode lets you hover over any part of the new tab to see what it does.
 
 ## Features
 
@@ -48,7 +48,7 @@ The **Todoist tips** button on the new tab has a longer cheat sheet.
 - **One nudge, with a reason.** For example: an overdue deadline, a project quiet for 6 days, a next step that has sat for a week, momentum worth keeping, a quick win, or a random forgotten task. **Not now** shows another one.
 - **Top 3:** pick up to three tasks for the day. They lead the nudges. A day runs from 04:00 to 04:00, so late nights count as the same day.
 - **Deadlines:** due dates in the next week, with overdue ones in amber.
-- **Projects:** every watched project with its next step, a streak or quiet label, and a thin progress bar: finished work (last 30 days) against what's still open, by estimate (30m for unlabeled tasks). It turns green when everything is done. Click a project's name to see all its tasks.
+- **Projects:** every watched project with its next step, a streak or quiet label, and a thin progress bar: finished work (last 30 days) against what's still open, by estimate (30m for unlabeled tasks). It turns green when everything is done. Click a project's name to see all its tasks. Hover the status on the right and click **Pause** for a project that's quiet on purpose: it's dimmed, shows "on hold" and gets no nudges until you resume it.
 - **I have 15m / 30m / 1h / 2h** lists the tasks whose estimates fit.
 - **Add task** (or the **N** key) opens a form with buttons for project, estimate, energy, due date, notes and subtasks. It writes the right Todoist labels for you, and **+ New project** creates a section.
 
@@ -99,19 +99,36 @@ Thumbs up makes a site up to 4× as likely to appear. Thumbs down makes it rare,
 
 ### Notifications
 
-- **Project nudges:** at most one per 2 hours of active PC use, with idle time and breaks not counted. After 3 tasks done in a day they come every 4 hours, and after 5 they stop for the day.
+- **Project nudges:** at most one per 2.5 hours of active PC use, with idle time and breaks not counted. After 3 tasks done in a day they come half as often, and after 5 they stop for the day.
 - **Deadline reminders:** 7 days before, 3 days, 1 day, on the day, then daily while overdue.
 - **Shutdown** (00:00 by default): an orange card with the day's summary and tomorrow's Top 3, then quiet until morning.
 - **Weekly review** (Sunday 21:00 by default): the week's numbers, empty the Inbox, check each project's next step, clear stuck steps, and pick Monday's Top 3. It also has a button on the top bar.
 - **Session briefing** when Chrome starts. It's off by default.
+- **Nothing pops up in the first 10 minutes** after Chrome starts, and several deadline reminders at once arrive as one notification.
+- **Quiet today** (top bar) stops every notification until tomorrow morning, deadlines included. It asks first, and lists anything still due today.
 
 Under Notifications in Settings, **Quiet / Normal / Chatty** sets how often nudges come, and each kind has its own switch.
 
 ![Settings](docs/settings.png)
 
+![Help](docs/help.png)
+
 ### Optional: Claude wording
 
 Add an Anthropic API key in Settings and nudges are worded by Claude Haiku from your Todoist data. API use is billed separately from a Claude subscription and costs a small fraction of a cent per nudge. Without a key, the built-in lines in `voice.js` are used. They mix witty, coach-like and deadpan, and you can add your own.
+
+### Search
+
+**Search** on the top bar (or the `/` key) finds any open task by name across all projects. Tick it, start a timer or open it in Todoist from the results.
+
+### Make it yours
+
+In Settings:
+- **New tab:** show or hide the praise headline, weather, health tip, note, hand-picked sites, music button, 7-day chart, Done today, "I have…" and the shutdown card. Choose how many hand-picked sites to show (2 to 8).
+- **Your day:** break budget, shutdown and weekly review times, and when a new day starts (04:00 by default).
+- **Backup:** export your settings, shortcuts, note, weather place and site ratings to a file, and import them on another PC. Your Todoist token and API key are never included.
+
+Up to 40 shortcut tiles fit on the left; the column scrolls if they don't all fit.
 
 ## Privacy
 
@@ -133,7 +150,7 @@ Add an Anthropic API key in Settings and nudges are worded by Claude Haiku from 
 | `background.js` | Timers, notifications, pause redirect, Todoist sync. |
 | `todoist.js`, `taskform.js`, `addtask.js` | Todoist API client and the add-task form. |
 | `daily.js`, `tracking.js` | Top 3, streaks, break budget, shutdown, review; focus and break maths. |
-| `today.js`, `review.js` | The Top 3 picker and the weekly review. |
+| `today.js`, `review.js`, `help.js` | The Top 3 picker, the weekly review and the Help window with explain mode. |
 | `shortcuts.js`, `postit.js`, `weather.js`, `wellness.js`, `music.js`, `corner.js` | Tiles, note, weather, health tips, music button. |
 | `newtab.*`, `pause.*`, `options.*` | The three pages. |
 

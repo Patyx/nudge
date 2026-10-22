@@ -2,6 +2,7 @@
 // icon: 'site' (the site's own icon), 'letter', or one of ICONS (an emoji).
 
 const KEY = 'shortcuts';
+const MAX = 40; // Chrome sync allows 8 KB per item; 40 tiles fit comfortably
 export const ICONS = ['📧', '📁', '💬', '🗓️', '🛠️', '💻', '🚀', '🛰️', '📚', '✏️', '🎵', '🎮', '🛒', '🏠', '💼', '📈'];
 const DEFAULTS = [
   { name: 'Gmail', url: 'https://mail.google.com/', icon: 'site' },
@@ -51,7 +52,7 @@ export function mountShortcuts(section, dialog) {
           <a href="${esc(s.url)}" title="${esc(s.url)}"><span class="ico">${iconHtml(s)}</span><span class="name">${esc(s.name)}</span></a>
           <button class="edit" data-edit="${esc(s.id)}" aria-label="Edit ${esc(s.name)}" title="Edit">⋮</button>
         </div>`).join('')}
-      <button class="tile add" data-add aria-label="Add shortcut"><span class="ico"><span class="letter">+</span></span><span class="name">Add shortcut</span></button>
+      ${list.length < MAX ? `<button class="tile add" data-add aria-label="Add shortcut"><span class="ico"><span class="letter">+</span></span><span class="name">Add shortcut</span></button>` : ''}
     </div>`;
     // A site with no icon gets its first letter instead.
     section.querySelectorAll('img[data-letter]').forEach((img) => {
@@ -138,6 +139,7 @@ export function mountShortcuts(section, dialog) {
     if (!editing.name.trim()) { err.textContent = 'Give it a name.'; return; }
     if (!url) { err.textContent = "That doesn't look like a web address."; return; }
     const item = { id: editing.id || `s${Date.now()}`, name: editing.name.trim(), url, icon: editing.icon || 'site' };
+    if (!editing.id && list.length >= MAX) { err.textContent = `That's the maximum of ${MAX} shortcuts.`; return; }
     const next = editing.id ? list.map((x) => (x.id === item.id ? item : x)) : [...list, item];
     await save(next);
     dialog.close();

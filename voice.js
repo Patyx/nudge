@@ -119,6 +119,11 @@ export const LINES = {
     ['Weekly review', '{summary} Ten minutes now keeps next week clear.'],
     ['Sunday reset', '{summary} Empty the inbox, check each project has a next step, done.'],
   ],
+  quietAsk: [
+    ['Quiet until tomorrow?', 'Fair enough, everyone needs an off switch. Just check: is there anything that really has to happen today?'],
+    ['Taking the rest of the day off?', 'Rest is part of the work. Before you go, is there one thing that would bother you tonight if it stayed undone?'],
+    ['Switching Nudge off for today?', 'No guilt, breaks are allowed. Quick look first: nothing important waiting on you today?'],
+  ],
   praise1: [
     ['One down.', '“{last}” is done. The first one is the hardest to start; the rest come easier.'],
     ['Off the list: {last}.', 'That counts. Whatever else happens today, this one is finished.'],

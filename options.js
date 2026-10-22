@@ -8,6 +8,7 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 const NUM = ['projectStaleDays', 'actionStaleDays', 'nudgeEveryActiveMinutes', 'newSessionGapHours', 'breakBudgetMin', 'farOffDays'];
 const CHECKS = ['notifyNudges', 'notifyDeadlines', 'notifyBriefing', 'notifyShutdown', 'notifyReview'];
 const TIMES = ['shutdownTime', 'reviewTime'];
+const SHOW = ['showPraise', 'showWeather', 'showTip', 'showNote', 'showSites', 'showMusic', 'showChart', 'showDoneToday', 'showFits', 'showShutdown'];
 
 let settings = null;
 
@@ -40,6 +41,9 @@ async function init() {
   $('#aiEnabled').checked = settings.aiEnabled;
   $('#anthropicKey').value = settings.anthropicKey;
   $('#aiModel').value = settings.aiModel;
+  for (const k of SHOW) $(`#${k}`).checked = settings[k] !== false;
+  $('#goldenCount').value = settings.goldenCount ?? 4;
+  $('#dayStartHour').value = String(settings.dayStartHour ?? 4);
   renderAreas(data.snapshot);
   if (data.lastError) status('#teststatus', data.lastError.message, 'bad');
 }
@@ -49,6 +53,9 @@ function collect() {
     token: $('#token').value.trim(),
     notifyLevel: $('#notifyLevel').value,
     ...Object.fromEntries(CHECKS.map((k) => [k, $(`#${k}`).checked])),
+    ...Object.fromEntries(SHOW.map((k) => [k, $(`#${k}`).checked])),
+    goldenCount: Math.max(2, Math.min(8, Number($('#goldenCount').value) || 4)),
+    dayStartHour: Number($('#dayStartHour').value),
     blockedSites: $('#blockedSites').value.split(/\s*\n\s*/).map((s) => s.trim()).filter(Boolean),
     aiEnabled: $('#aiEnabled').checked,
     anthropicKey: $('#anthropicKey').value.trim(),
@@ -160,3 +167,42 @@ async function runPlaceSearch() {
 $('#placeSearch').onclick = runPlaceSearch;
 $('#placeQuery').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); runPlaceSearch(); } });
 showPlace();
+
+// ---------- backup ----------
+const SYNC_KEYS = ['shortcuts', 'postit', 'weatherPlace', 'top3'];
+const LOCAL_KEYS = ['goldenRatings'];
+const SECRET = ['token', 'anthropicKey'];
+
+$('#exportBtn').onclick = async () => {
+  const local = await chrome.storage.local.get(['settings', ...LOCAL_KEYS]);
+  const sync = await chrome.storage.sync.get(SYNC_KEYS);
+  const s = { ...(local.settings || {}) };
+  for (const k of SECRET) delete s[k];
+  const file = { app: 'nudge', version: chrome.runtime.getManifest().version, exportedAt: new Date().toISOString(), settings: s, sync, local: { goldenRatings: local.goldenRatings || {} } };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' }));
+  const a = Object.assign(document.createElement('a'), { href: url, download: `nudge-settings-${new Date().toISOString().slice(0, 10)}.json` });
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  status('#backupstatus', 'Exported.', 'ok');
+};
+
+$('#importFile').onchange = async (e) => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  try {
+    const j = JSON.parse(await f.text());
+    if (j.app !== 'nudge' || typeof j.settings !== 'object') throw new Error('This is not a Nudge settings file');
+    const keep = (await chrome.storage.local.get('settings')).settings || {};
+    const incoming = { ...j.settings };
+    for (const k of SECRET) delete incoming[k]; // never take secrets from a file
+    await chrome.storage.local.set({ settings: { ...keep, ...incoming, token: keep.token || '', anthropicKey: keep.anthropicKey || '' } });
+    const sync = Object.fromEntries(Object.entries(j.sync || {}).filter(([k]) => SYNC_KEYS.includes(k)));
+    if (Object.keys(sync).length) await chrome.storage.sync.set(sync);
+    if (j.local?.goldenRatings) await chrome.storage.local.set({ goldenRatings: j.local.goldenRatings });
+    status('#backupstatus', 'Imported. Reloading…', 'ok');
+    setTimeout(() => location.reload(), 700);
+  } catch (err) {
+    status('#backupstatus', `Import failed: ${err.message}`, 'bad');
+  }
+};

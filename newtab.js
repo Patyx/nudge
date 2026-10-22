@@ -1,6 +1,6 @@
 import { computeState, nudgeCandidates, fitsIn, minutesFromLabels, fmtMinutes, cleanTitle, HOUR, deadlines, deadlineLabel, nothingText, areaOfTask } from './engine.js';
 import { stats7, fmtDuration, focusMinutes } from './tracking.js';
-import { dayId, nextDayId, topFor, topItems, doneToday, areaStreak, twoMinuteTask, inShutdownWindow, isReviewTime, weekId, setTop } from './daily.js';
+import { setDayStart, dayId, nextDayId, topFor, topItems, doneToday, areaStreak, twoMinuteTask, inShutdownWindow, isReviewTime, weekId, setTop } from './daily.js';
 import { mountPicker, loadTop3, saveTop3 } from './today.js';
 import { mountReview } from './review.js';
 import { mountShortcuts } from './shortcuts.js';
@@ -11,6 +11,7 @@ import { mountPostit } from './postit.js';
 import { tipFor } from './wellness.js';
 import { mountWeather } from './weather.js';
 import { mountAddTask } from './addtask.js';
+import { mountHelp } from './help.js';
 
 const $ = (s) => document.querySelector(s);
 const send = (msg) => chrome.runtime.sendMessage(msg);
@@ -29,6 +30,8 @@ $('#date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'lo
 async function load(force = false) {
   data = await send({ type: 'getData', force });
   top3Store = await loadTop3();
+  setDayStart(data.settings.dayStartHour);
+  applyLayout(data.settings);
   state = data.snapshot ? computeState({ ...data.snapshot, top3: topFor(top3Store) }, data.settings) : null;
   render();
 }
@@ -76,7 +79,7 @@ function renderNudge() {
     return;
   }
   const c = heroCandidate();
-  const praise = praiseHtml();
+  const praise = data.settings.showPraise === false ? '' : praiseHtml();
   el.classList.toggle('praised', !!praise);
   if (!c) {
     const n = nothingText();
@@ -110,6 +113,7 @@ function renderDeadlines() {
 }
 
 function statusText(a) {
+  if (a.onHold) return 'on hold';
   if (a.openCount === 0) return a.stale ? 'no next step' : '';
   const streak = state ? areaStreak(state, a) : 0;
   if (streak >= 2) return `${streak}-day streak`;
@@ -180,7 +184,7 @@ function renderAreas() {
     const t = a.next;
     const min = t ? minutesFromLabels(t.labels) : null;
     const prog = progressOf(a);
-    const cls = ['area', a.stale ? 'stale' : '', a.doneLast24h ? 'moving' : ''].join(' ');
+    const cls = ['area', a.stale ? 'stale' : '', a.doneLast24h ? 'moving' : '', a.onHold ? 'held' : ''].join(' ');
     const open = expanded.has(a.id);
     return `<div class="${cls}${open ? ' open' : ''}">
       <button class="name" data-toggle="${esc(a.id)}" aria-expanded="${open}" title="Show all tasks">${esc(a.name)} <span class="chev">${open ? '▾' : '▸'}</span></button>
@@ -190,13 +194,17 @@ function renderAreas() {
            ${min ? `<span class="est">${fmtMinutes(min)}</span>` : ''}
            ${playBtn(t)}`
         : `<button class="empty" data-add="${esc(a.id)}">Write the next step</button>`}</span>
-      <span class="status">${statusText(a)}</span>
+      <span class="status"><button class="hold" data-hold="${esc(a.id)}" data-on="${a.onHold ? '0' : '1'}" title="${a.onHold ? 'Resume: quiet nudges come back' : 'On hold: no quiet nudges for this project until you resume it'}">${a.onHold ? '▶ Resume' : '⏸ Pause'}</button><span class="st">${statusText(a)}</span></span>
       ${prog ? `<span class="meter${prog.full ? ' full' : ''}" title="${esc(prog.label)}"><i style="width:${prog.pct}%"></i></span>` : ''}
       ${open ? taskListHtml(a) : ''}
     </div>`;
   }).join('') || `<p class="foot">No tracked projects yet. Choose them in settings.</p>`;
   el.querySelectorAll('.check').forEach((b) => (b.onclick = () => complete(b.dataset.id, b)));
   el.querySelectorAll('[data-add]').forEach((b) => (b.onclick = () => adder.open({ targetId: b.dataset.add, nextStep: true })));
+  el.querySelectorAll('[data-hold]').forEach((b) => (b.onclick = async () => {
+    await send({ type: 'setOnHold', areaId: b.dataset.hold, onHold: b.dataset.on === '1' });
+    load();
+  }));
   el.querySelectorAll('[data-toggle]').forEach((b) => (b.onclick = () => {
     const id = b.dataset.toggle;
     if (expanded.has(id)) expanded.delete(id); else expanded.add(id);
@@ -445,7 +453,7 @@ function renderTwoMin() {
 function renderShutdown() {
   const el = $('#shutdown');
   const s = data.settings;
-  if (!state || !inShutdownWindow(s.shutdownTime) || data.shutdownDone === dayId()) { el.hidden = true; el.innerHTML = ''; return; }
+  if (!state || s.showShutdown === false || !inShutdownWindow(s.shutdownTime) || data.shutdownDone === dayId()) { el.hidden = true; el.innerHTML = ''; return; }
   const done = doneToday(state);
   const focusToday = (data.focusLog || []).filter((f) => f.at >= Date.now() - 20 * 3600000).reduce((a, f) => a + f.minutes, 0);
   const tomorrow = top3Store[nextDayId()] || [];
@@ -487,6 +495,7 @@ function render() {
   renderFits();
   renderBreak();
   renderFoot();
+  renderQuiet();
 }
 
 async function complete(id, btn, rowEl) {
@@ -562,7 +571,6 @@ $('#today').addEventListener('click', (e) => {
   if (!data?.settings?.token) { chrome.runtime.openOptionsPage(); return; }
   adder.open();
 });
-mountWeather($('#weather'));
 document.addEventListener('keydown', (e) => {
   if (e.key.toLowerCase() !== 'n' || e.ctrlKey || e.metaKey || e.altKey) return;
   const t = e.target;
@@ -581,18 +589,113 @@ function toast(text, href) {
   toastTimer = setTimeout(() => { el.hidden = true; }, 6000);
 }
 
-mountSpotifyCorner();
+// ---------- layout: parts you can hide in Settings ----------
+
+const PARTS = { showWeather: '#weather', showTip: '#wellness', showNote: '#postit', showSites: '#golden-section',
+  showMusic: '.spotify', showChart: '#stats', showDoneToday: '#done-today', showFits: '.time' };
+let mounted = false;
+function applyLayout(s) {
+  for (const [key, sel] of Object.entries(PARTS)) {
+    document.querySelectorAll(sel).forEach((el) => el.classList.toggle('off', s[key] === false));
+  }
+  if (mounted) return;
+  mounted = true;
+  if (s.showSites !== false) {
+    const count = Math.max(2, Math.min(8, Number(s.goldenCount) || 4));
+    mountGolden(document.getElementById('golden-section'), { heading: 'Elsewhere on the web', count });
+  }
+  if (s.showWeather !== false) mountWeather($('#weather'));
+  if (s.showNote !== false) mountPostit(document.getElementById('postit'));
+  if (s.showMusic !== false) mountSpotifyCorner();
+  showTip();
+}
+
 mountShortcuts($('#shortcuts'), $('#sc-dialog'));
-mountGolden(document.getElementById('golden-section'), { heading: 'Elsewhere on the web', count: 4 });
-mountPostit(document.getElementById('postit'));
 
 let tipOffset = 0;
-const showTip = () => { $('#wellness').textContent = tipFor(Date.now(), tipOffset); };
+function showTip() { $('#wellness').textContent = tipFor(Date.now(), tipOffset); }
 $('#wellness').onclick = () => { tipOffset++; showTip(); };
-showTip();
 $('#settings').onclick = () => chrome.runtime.openOptionsPage();
-$('#tips-open').onclick = () => $('#tips').showModal();
-$('#tips-close').onclick = () => $('#tips').close();
-$('#tips').addEventListener('click', (e) => { if (e.target.id === 'tips') $('#tips').close(); });
+
+// ---------- help ----------
+const help = mountHelp($('#help'), $('#help-box'));
+$('#help-open').onclick = () => help.open();
+
+// ---------- quiet until tomorrow ----------
+function renderQuiet() {
+  const b = $('#quiet-open');
+  if (data.quietUntil) {
+    b.textContent = 'Quiet until morning';
+    b.title = 'Notifications are off. Click to turn them back on.';
+    b.classList.add('on');
+  } else {
+    b.textContent = 'Quiet today';
+    b.title = 'Stop all notifications until tomorrow morning';
+    b.classList.remove('on');
+  }
+}
+$('#quiet-open').onclick = async () => {
+  if (data?.quietUntil) { await send({ type: 'quietToday', off: true }); load(); return; }
+  const d = $('#quiet-dialog');
+  const txt = say('quietAsk', {}, dayId());
+  const urgent = state ? deadlines(state).filter((x) => x.stage === 'overdue' || x.stage === 'today') : [];
+  const top = state ? topItems(state, topFor(top3Store)).filter((x) => !x.done) : [];
+  const waiting = [...urgent.map((x) => `${cleanTitle(x.t.content)} (${deadlineLabel(x).toLowerCase()})`),
+    ...top.filter((x) => !urgent.some((u) => u.t.id === x.task.id)).map((x) => `${cleanTitle(x.task.content)} (Top 3)`)].slice(0, 4);
+  d.innerHTML = `<form method="dialog" class="quiet-form">
+      <h2 id="quiet-title">${esc(txt.title)}</h2>
+      <p>${esc(txt.body)}</p>
+      ${waiting.length ? `<p class="hint">Still open today:</p><ul>${waiting.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : '<p class="hint">Nothing due today. Enjoy it.</p>'}
+      <p class="hint">No notifications at all until tomorrow morning, deadlines included. The new tab still shows everything.</p>
+      <div class="actions"><button class="btn" value="no">Not yet</button><button class="btn solid" value="yes">Quiet until tomorrow</button></div>
+    </form>`;
+  d.onclose = async () => {
+    if (d.returnValue !== 'yes') return;
+    await send({ type: 'quietToday' });
+    toast('Quiet until tomorrow morning. See you then.');
+    load();
+  };
+  d.returnValue = '';
+  d.showModal();
+};
+
+// ---------- search ----------
+function openSearch() {
+  if (!state) return;
+  const d = $('#search');
+  d.innerHTML = `<div class="search-box"><input type="search" id="search-q" placeholder="Search your open tasks" autocomplete="off" aria-label="Search your open tasks">
+      <button class="btn quiet" data-close>Esc</button></div><ul class="search-results" id="search-results"></ul>`;
+  const q = d.querySelector('#search-q');
+  const out = d.querySelector('#search-results');
+  const draw = () => {
+    const words = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!words.length) { out.innerHTML = '<li class="none">Type part of a task name. Matches any project.</li>'; return; }
+    const hits = state.open.filter((t) => { const c = cleanTitle(t.content).toLowerCase(); return words.every((w) => c.includes(w)); }).slice(0, 30);
+    if (!hits.length) { out.innerHTML = '<li class="none">No open task matches.</li>'; return; }
+    out.innerHTML = hits.map((t) => {
+      const a = areaOfTask(state, t);
+      const m = minutesFromLabels(t.labels);
+      return `<li><button class="check" data-id="${esc(t.id)}" aria-label="Mark “${esc(cleanTitle(t.content))}” done"></button>
+        <a href="${taskUrl(t.id)}">${esc(cleanTitle(t.content))}</a>
+        <span class="where">${esc(a ? a.name : 'Inbox')}</span>${m ? `<span class="est">${fmtMinutes(m)}</span>` : ''}${playBtn(t)}</li>`;
+    }).join('');
+    out.querySelectorAll('.check').forEach((b) => (b.onclick = () => complete(b.dataset.id, b)));
+    out.querySelectorAll('[data-focus]').forEach((b) => (b.onclick = () => { d.close(); startFocus(b.dataset.focus); }));
+  };
+  q.oninput = draw;
+  d.onclick = (e) => { if (e.target === d || e.target.closest('[data-close]')) d.close(); };
+  draw();
+  d.showModal();
+  q.focus();
+}
+$('#search-open').onclick = openSearch;
+
+// Keys: / search, ? help (N for a new task is set up above)
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest?.('input, textarea, select, [contenteditable]') || document.querySelector('dialog[open]')) return;
+  if (e.key === '/') { e.preventDefault(); openSearch(); }
+  else if (e.key === '?') { e.preventDefault(); help.open(); }
+});
 
 load();
