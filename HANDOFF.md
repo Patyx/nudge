@@ -75,7 +75,7 @@ docs/              README screenshots (rendered from made-up demo data)
 
 ## Known limitations and sharp edges
 
-- **Completed history covers only 30 days** (`fetchSnapshot(token, 30)`). That limit affects:
+- **Completed history covers only 30 days** (the `lookbackDays = 30` default in `fetchSnapshot`). That limit affects:
   - streaks
   - "quiet for N days", which shows `30d+`
   - progress bars
@@ -87,7 +87,7 @@ docs/              README screenshots (rendered from made-up demo data)
 - **The Todoist token sits in `chrome.storage.local` in plain text.** That's normal for extensions, but anyone with access to the Chrome profile can read it. Backup export removes `token` and `anthropicKey`, and import never takes them from a file.
 - **`ai.js` calls Anthropic straight from the browser** using the `anthropic-dangerous-direct-browser-access` header. It's opt-in and uses the user's own key.
 - **Day boundary:** `daily.js` keeps the configurable start hour in a module variable (`setDayStart`). Both the background and the new tab call it after loading settings. Any new entry point that uses `dayId()` must do the same.
-- **`newtab.js` is long (~650 lines).** It renders per section (`renderX()` functions), and `render()` calls them all. It still works fine; splitting it is a reasonable refactor if a change gets painful.
+- **`newtab.js` is long (~700 lines).** It renders per section (`renderX()` functions), and `render()` calls them all. It still works fine; splitting it is a reasonable refactor if a change gets painful.
 - **The phone (Apps Script) prototype was dropped** and isn't in this repo.
 
 ## How to check a change
