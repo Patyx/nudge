@@ -34,10 +34,12 @@ async function getSettings() {
 
 // ---------- data ----------
 
-async function refresh({ force = false } = {}) {
+// maxAge: how old a cached snapshot may be before Todoist is asked again.
+// Pages accept 5 minutes; background checks accept anything since the last 15-minute sync.
+async function refresh({ force = false, maxAge = 5 * 60000 } = {}) {
   const settings = await getSettings();
   const cached = await load('snapshot', null);
-  if (!force && cached && Date.now() - cached.fetchedAt < 2 * 60000) return cached;
+  if (!force && cached && Date.now() - cached.fetchedAt < maxAge) return cached;
   if (!settings.token) return cached;
   try {
     const snap = await fetchSnapshot(settings.token);
@@ -53,8 +55,8 @@ async function getTop3() {
   try { return topFor((await chrome.storage.sync.get('top3')).top3 || {}); } catch { return []; }
 }
 
-async function currentState(opts) {
-  const snap = await refresh(opts);
+async function currentState(opts = {}) {
+  const snap = await refresh({ maxAge: (SYNC_MIN + 2) * 60000, ...opts });
   if (!snap) return null;
   return computeState({ ...snap, top3: await getTop3() }, await getSettings());
 }
@@ -267,9 +269,14 @@ function isRedditPost(url) {
   return /^\/(r\/[^/]+\/)?(comments|s)\/|^\/gallery\//.test(url.pathname);
 }
 
+// The pause list, kept in memory: this runs on every page load, so it shouldn't read storage each time.
+let blockedCache = null;
+chrome.storage.onChanged?.addListener((ch, area) => { if (area === 'local' && ch.settings) blockedCache = null; });
+
 async function maybePause(d) {
   if (d.frameId !== 0 || !/^https?:/.test(d.url)) return;
-  const { blockedSites } = await getSettings();
+  if (!blockedCache) blockedCache = (await getSettings()).blockedSites || [];
+  const blockedSites = blockedCache;
   let url;
   try { url = new URL(d.url); } catch { return; }
   if (!hostMatches(url.hostname, blockedSites)) return;
@@ -298,7 +305,12 @@ async function ensureAlarms() {
 
 chrome.alarms.onAlarm.addListener(async (a) => {
   if (a.name === 'tick') await tick();
-  else if (a.name === 'sync') { await refresh({ force: true }); await deleteOldReminderTasks(); }
+  else if (a.name === 'sync') {
+    // Away from the PC for a while: skip the fetch. Coming back (or opening a tab) refreshes anyway.
+    if ((await chrome.idle.queryState(IDLE_SECONDS)) !== 'active' && Date.now() - (await load('lastActiveAt', 0)) > 20 * 60000) return;
+    await refresh({ force: true });
+    await deleteOldReminderTasks();
+  }
   else if (a.name === 'breakEnd') await endBreak();
 });
 

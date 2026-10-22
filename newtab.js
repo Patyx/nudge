@@ -27,7 +27,9 @@ let twoMinSkip = [];
 
 $('#date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
 
+let loadedAt = 0;
 async function load(force = false) {
+  loadedAt = Date.now();
   data = await send({ type: 'getData', force });
   top3Store = await loadTop3();
   setDayStart(data.settings.dayStartHour);
@@ -300,8 +302,9 @@ function renderFocus() {
     clock.textContent = est ? `${t} of ${fmtMinutes(est)}` : t;
     clock.classList.toggle('over', !!est && s / 60 > est);
   };
+  // No ticking clock in background tabs.
   draw();
-  focusTick = setInterval(draw, 1000);
+  focusTick = setInterval(() => { if (!document.hidden) draw(); }, 1000);
 
   const form = el.querySelector('.focus-stop');
   const err = el.querySelector('.focus-err');
@@ -689,6 +692,11 @@ function openSearch() {
   q.focus();
 }
 $('#search-open').onclick = openSearch;
+
+// A tab left open for a while catches up when you come back to it.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && Date.now() - loadedAt > 5 * 60000) load();
+});
 
 // Keys: / search, ? help (N for a new task is set up above)
 document.addEventListener('keydown', (e) => {
