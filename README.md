@@ -1,8 +1,10 @@
 # Nudge
 
-I kept starting projects and then losing them: to the feed, to the backlog, to forgetting they existed. So I made the first thing my browser shows me a calm reminder of what I actually want to be doing, instead of what an algorithm wants me to watch. And when I drift off to procrastinate anyway, it suggests better things to do with that time: hand-picked corners of the web worth visiting, instead of another feed.
+I made the first thing my browser shows me a calm reminder of what I actually want to be doing, instead of what an algorithm wants me to watch. 
 
-Nudge replaces Chrome's new tab page. It uses Todoist only as the place your tasks are stored; you don't need to live in the Todoist app.
+And when I drift off to procrastinate anyway, it suggests better things to do with that time: hand-picked corners of the web worth visiting, instead of another feed.
+
+Nudge replaces Chrome's new tab page. It uses Todoist only as the place your tasks are stored; you only need to create a free Todoist account.
 
 Every new tab shows what you've done today, one next step with the reason for it, your deadlines and every project's next task. When a project goes quiet you get a gentle notification that says why. Reddit and Facebook open a pause screen first: your next step, a few hand-picked corners of the web, or a timed break.
 
