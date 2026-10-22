@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Nudge",
+  "version": "1.0.0",
+  "description": "Your Todoist projects on every new tab, with gentle, reasoned nudges when something goes quiet.",
+  "icons": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" },
+  "action": { "default_title": "Nudge settings" },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "chrome_url_overrides": { "newtab": "newtab.html" },
+  "options_page": "options.html",
+  "permissions": ["storage", "alarms", "notifications", "idle", "webNavigation"],
+  "host_permissions": ["https://api.todoist.com/*", "https://api.anthropic.com/*", "https://api.open-meteo.com/*", "https://geocoding-api.open-meteo.com/*"],
+  "minimum_chrome_version": "120"
+}

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nudge settings</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page opts">
+    <h1>Nudge settings</h1>
+    <p class="lead">Reads your Todoist, shows the next step on every new tab, and pings you when a project goes quiet.</p>
+
+    <section>
+      <h2>Todoist</h2>
+      <p class="hint">In Todoist: Settings, Integrations, Developer, copy the API token. It stays in this browser.</p>
+      <label for="token">API token</label>
+      <input type="password" id="token" autocomplete="off" spellcheck="false">
+      <div class="inline"><button class="btn" id="test">Check connection</button><span class="status" id="teststatus"></span></div>
+    </section>
+
+    <section>
+      <h2>Projects to watch</h2>
+      <p class="hint">These show on the new tab and get stale nudges. Sections count as projects, so "Garden" inside "Big Projects" is its own row.</p>
+      <div class="grid" id="areas"><span class="hint">Connect Todoist to see your projects.</span></div>
+    </section>
+
+    <section>
+      <h2>When to nudge</h2>
+      <div class="inline"><input type="number" id="projectStaleDays" min="1" max="60"><label for="projectStaleDays">days without progress before a project counts as quiet</label></div>
+      <div class="inline"><input type="number" id="actionStaleDays" min="1" max="90"><label for="actionStaleDays">days a next step can sit before it gets flagged as stuck</label></div>
+      <div class="inline"><input type="number" id="nudgeEveryActiveMinutes" min="30" max="600" step="15"><label for="nudgeEveryActiveMinutes">minutes of active PC use between nudges</label></div>
+      <div class="inline"><input type="number" id="newSessionGapHours" min="1" max="48"><label for="newSessionGapHours">hours away that count as a new session (you get a briefing when you return)</label></div>
+    </section>
+
+    <section>
+      <h2>Notifications</h2>
+      <div class="inline"><label for="notifyLevel">How often regular nudges come</label>
+        <select id="notifyLevel">
+          <option value="quiet">Quiet: half as often</option>
+          <option value="normal">Normal</option>
+          <option value="chatty">Chatty: twice as often</option>
+        </select></div>
+      <div class="inline"><input type="checkbox" id="notifyNudges"><label for="notifyNudges">Project nudges (quiet project, stuck step, quick win)</label></div>
+      <div class="inline"><input type="checkbox" id="notifyDeadlines"><label for="notifyDeadlines">Deadline reminders (7 days, 3 days, 1 day, on the day, overdue)</label></div>
+      <div class="inline"><input type="checkbox" id="notifyBriefing"><label for="notifyBriefing">Session briefing when Chrome starts or you come back after a while</label></div>
+      <div class="inline"><input type="checkbox" id="notifyShutdown"><label for="notifyShutdown">Shutdown reminder at the end of the day</label></div>
+      <div class="inline"><input type="checkbox" id="notifyReview"><label for="notifyReview">Weekly review reminder</label></div>
+      <div class="inline"><input type="number" id="farOffDays" min="1" max="365"><label for="farOffDays">days ahead: tasks dated further out are notes and never get nudged</label></div>
+      <p class="hint">Break-end reminders always come. Switched-off notifications still show on the new tab.</p>
+    </section>
+
+    <section>
+      <h2>Weather</h2>
+      <p class="hint">Shown next to the date: now and tomorrow, from Open-Meteo (free, no account). Leave it empty to hide the weather.</p>
+      <div class="inline"><input type="text" id="placeQuery" placeholder="City, e.g. Kraków" autocomplete="off"><button class="btn" id="placeSearch">Search</button></div>
+      <div id="placeResults" class="place-results"></div>
+      <p class="hint" id="placeNow"></p>
+    </section>
+
+    <section>
+      <h2>Your day</h2>
+      <div class="inline"><input type="number" id="breakBudgetMin" min="15" max="600" step="15"><label for="breakBudgetMin">minutes of breaks per day; after that only 15-minute breaks</label></div>
+      <div class="inline"><input type="time" id="shutdownTime"><label for="shutdownTime">shutdown reminder (the card shows from 30 minutes before)</label></div>
+      <div class="inline"><input type="time" id="reviewTime"><label for="reviewTime">weekly review reminder, on Sundays</label></div>
+    </section>
+
+    <section>
+      <h2>Pause list</h2>
+      <p class="hint">Opening these shows your next step first, three hand-picked sites worth your time instead, and the option to start a timed break. One site per line. Subdomains are included, so reddit.com also covers old.reddit.com.</p>
+      <textarea id="blockedSites" spellcheck="false"></textarea>
+    </section>
+
+    <section>
+      <h2>Hand-picked sites</h2>
+      <p class="hint">Your thumbs. Liked sites show up more often; hidden ones never do. Click a hidden one to bring it back.</p>
+      <div id="ratings"><span class="hint">No ratings yet. Use the thumbs under any link.</span></div>
+      <div class="inline"><button class="btn" id="resetRatings">Reset all ratings</button></div>
+    </section>
+
+    <section>
+      <h2>Claude wording (optional)</h2>
+      <p class="hint">Uses a Claude API key from console.anthropic.com. API usage is billed separately from a Claude Pro subscription. With Haiku 5.5 a nudge costs a small fraction of a cent. Without a key, nudges use built-in wording.</p>
+      <div class="inline"><input type="checkbox" id="aiEnabled"><label for="aiEnabled">Let Claude word nudges and briefings</label></div>
+      <label for="anthropicKey">API key</label>
+      <input type="password" id="anthropicKey" autocomplete="off" spellcheck="false">
+      <label for="aiModel">Model</label>
+      <input type="text" id="aiModel" spellcheck="false">
+    </section>
+
+    <section>
+      <h2>Try it</h2>
+      <div class="inline">
+        <button class="btn" id="testNudge">Send a nudge now</button>
+        <button class="btn" id="testBriefing">Show the session briefing</button>
+        <span class="status" id="trystatus"></span>
+      </div>
+    </section>
+
+    <div class="savebar"><button class="btn solid" id="save">Save</button><span class="status" id="savestatus"></span></div>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

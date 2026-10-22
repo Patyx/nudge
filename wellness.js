@@ -1,0 +1,88 @@
+// Small, well-established habits. One shows at the top of the new tab and changes every hour.
+// Click it for another. Add your own lines.
+
+export const TIPS = [
+  'Look at something 6 metres away for 20 seconds. Your eyes have been focused at arm\'s length for a while.',
+  'Drink a glass of water. Mild thirst often passes for tiredness.',
+  'Stand up and walk for two minutes. Short breaks from sitting add up over a day.',
+  'Drop your shoulders away from your ears. Most people hold them higher than they think.',
+  'Breathe out longer than you breathe in, five times. A slow exhale calms the nervous system.',
+  'Check the top of your screen is at about eye level. Your neck will thank you tonight.',
+  'Unclench your jaw and let your tongue rest. Jaw tension builds up quietly at a desk.',
+  'Get some daylight before noon if you can. Morning light helps set your sleep rhythm.',
+  'Blink deliberately ten times. We blink much less when staring at screens.',
+  'Roll your shoulders back five times, then forward five times.',
+  'If it\'s past 21:00, dim the screen and the room lights. Bright light late pushes sleep back.',
+  'Have a piece of fruit or a handful of nuts instead of the next snack you were planning.',
+  'Stretch your wrists: palm out, gently pull the fingers back, 15 seconds each hand.',
+  'Open a window for five minutes. Stuffy rooms make focus harder.',
+  'Stand up for your next phone call and walk while you talk.',
+  'Sit back so your lower back touches the chair. Leaning forward is how the ache starts.',
+  'Caffeine lasts for hours. Keep the last coffee before about 14:00 if sleep has been rough.',
+  'Look out of the window for a minute. Distance and green are both good for tired eyes.',
+  'Text one friend you haven\'t spoken to in a while. Small contact counts.',
+  'Put your feet flat on the floor and notice where you are sitting. Three slow breaths.',
+  'Do ten squats or ten calf raises. It wakes the legs up after sitting.',
+  'Tidy one small thing on your desk. A clear surface makes starting easier.',
+  'Write down the thing you keep remembering. Your head is for thinking, not storage.',
+  'Eat lunch away from the screen today, even for ten minutes.',
+  'Move the phone out of reach for the next hour. Out of sight helps more than willpower.',
+  'Turn your head slowly left and right, then ear towards shoulder on each side.',
+  'Same wake-up time every day, weekends included, steadies sleep more than an early night.',
+  'Go outside for a ten-minute walk today. Light, air and movement in one go.',
+  'Check your screen brightness matches the room. Much brighter than the room tires the eyes.',
+  'Name one thing that went well today. Noticing it is the whole exercise.',
+  'Notice whether you are actually hungry or just bored. Both are fine, they need different fixes.',
+  'Stand up, reach both arms overhead and stretch tall for a few breaths.',
+  'If you have been sitting for over an hour, this is your sign.',
+  'Keep a water bottle on the desk. Seeing it is most of the trick.',
+  'Rest your eyes closed for 30 seconds. Nothing else, just that.',
+
+  // mind
+  'Name what you feel in one word: tired, anxious, bored, fine. Naming it takes some of the weight off.',
+  'Talk to yourself the way you would talk to a friend in the same spot.',
+  'A bad day is a day, not a verdict on you.',
+  'If your head is loud, write it all down for five minutes. No editing. Then close the page.',
+  'Feeling stuck often means the next step is too big. Make it smaller until it looks easy.',
+  'You don\'t need to feel motivated to start. Starting is usually what brings the motivation.',
+  'Worrying about something you can\'t act on today? Write when you will think about it, then let it wait.',
+  'Rest is not a reward for finishing. You are allowed it now.',
+  'Low for more than two weeks? Tell someone you trust, or talk to a GP. It\'s a normal thing to ask about.',
+  'Compare yourself with who you were last year, not with someone else\'s highlights.',
+  'Something you dread? Do the first five minutes only. You can stop after that.',
+  'Notice three things you can hear right now. It pulls you out of your head and into the room.',
+  'Saying no to one thing is saying yes to something else. Choose which.',
+  'Done is better than perfect for almost everything except bridges and rockets.',
+  'Doom-scrolling is your brain looking for closure that the feed never gives. Close it yourself.',
+
+  // people
+  'Call your mum or dad this week, just to chat. No reason needed.',
+  'Ask someone at home how their day actually went, then listen to the whole answer.',
+  'Send a friend a photo or a memory of something you did together.',
+  'Plan one thing with friends in the next two weeks. Put a date on it, not "sometime".',
+  'Thank someone for something specific they did. It costs a minute and stays with them for days.',
+  'Is there someone you have been meaning to reply to? Today is a good day.',
+  'Eat one meal this week with someone, phones away.',
+  'When someone talks, try not to plan your answer. Just listen.',
+  'Check in on the friend who always seems fine.',
+  'Grandparents, aunts, old teachers: someone would be glad to hear from you.',
+  'Being a little late to reply is fine. Not replying at all slowly costs friendships.',
+
+  // wiser people
+  '"We suffer more often in imagination than in reality." Seneca',
+  '"It\'s not things that upset us, but our judgements about things." Epictetus',
+  '"Almost everything will work again if you unplug it for a few minutes, including you." Anne Lamott',
+  '"How we spend our days is, of course, how we spend our lives." Annie Dillard',
+  '"The first principle is that you must not fool yourself, and you are the easiest person to fool." Richard Feynman',
+  '"The best is the enemy of the good." Voltaire',
+  '"Start where you are. Use what you have. Do what you can." Arthur Ashe',
+  '"Nothing in life is to be feared, it is only to be understood." Marie Curie',
+  '"A journey of a thousand miles begins beneath one\'s feet." Lao Tzu',
+  'Kurt Vonnegut\'s advice: when you notice you\'re happy, say out loud, "If this isn\'t nice, I don\'t know what is."',
+  'Seneca again: a long life is not about how many years you get but how you use them.',
+];
+
+export function tipFor(now = Date.now(), offset = 0) {
+  const hour = Math.floor(now / 3600000);
+  return TIPS[((hour + offset) % TIPS.length + TIPS.length) % TIPS.length];
+}

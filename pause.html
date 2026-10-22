@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pause</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="pause">
+    <div class="box">
+      <div class="site" id="site"></div>
+      <h1 id="title">One moment.</h1>
+      <p id="body"></p>
+      <div class="actions" style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn solid" id="back">Back to my list</button>
+        <a class="btn" id="open" hidden>Open the task</a>
+      </div>
+      <section id="golden-section" aria-label="Hand-picked sites"></section>
+      <div class="break">
+        <span id="break-intro">Still want to go in? Make it a proper break. It ends with a reminder.</span>
+        <div class="row" id="break-buttons"></div>
+        <small id="budget"></small>
+        <small id="fun"></small>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="pause.js"></script>
+</body>
+</html>
