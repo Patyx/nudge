@@ -1,6 +1,8 @@
 # Nudge
 
-A Chrome new tab page for people who use Todoist and drift away from their own projects.
+I kept starting projects and then losing them: to the feed, to the backlog, to forgetting they existed. So I made the first thing my browser shows me a calm reminder of what I actually want to be doing, instead of what an algorithm wants me to watch.
+
+Nudge replaces Chrome's new tab page. It uses Todoist only as the place your tasks are stored; you don't need to live in the Todoist app.
 
 Every new tab shows what you've done today, one next step with the reason for it, your deadlines and every project's next task. When a project goes quiet you get a gentle notification that says why. Reddit and Facebook open a pause screen first: your next step, a few hand-picked corners of the web, or a timed break.
 
